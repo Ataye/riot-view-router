@@ -53,7 +53,7 @@ export class Utils {
   stateByRoute() {
     const self = this.$router
 
-    let stubs = self.location.hash.split(self.constants.defaults.hash)
+    let stubs = self.location.hash.split(self.settings.hash)
     if (stubs.length == 2) {
       if (self.settings.fragments)
         stubs = stubs.join('').split('#')[0].split()
@@ -93,7 +93,7 @@ export class Utils {
 
     const variables = state.route.variables.map(v => Object.assign({}, v))
     // # make a deep copy of state variables as to not pollute state
-    let stubs = self.location.hash.split(self.constants.defaults.hash)
+    let stubs = self.location.hash.split(self.settings.hash)
     let query = []
     if (stubs.length == 2) {
       if (self.settings.fragments) {

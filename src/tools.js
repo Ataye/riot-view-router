@@ -1,3 +1,5 @@
+import observable from 'riot-observable'
+
 export class Tools {
 
   /**
@@ -18,7 +20,8 @@ export class Tools {
 
     return new Promise((resolve) => {
       if (self.$state)
-        self.context.children[0]._tag.unmount()
+        self.$riot.unmount(self.context.children[0].localName)
+        //self.context.children[0]._tag.unmount()
 
       const node = document.createElement(state.tag)
       self.context.appendChild(node)
@@ -38,6 +41,9 @@ export class Tools {
       }
       else
         var tag = self.$riot.mount(state.tag)
+
+      // make component observable:
+      observable(tag[0])
 
       self.trigger('transition', { state })
 
@@ -63,7 +69,7 @@ export class Tools {
       tag[0].trigger('updated') // # trigger sref binding
 
       if (self.settings.fragments) {
-        const fragment = self.location.hash.split(self.constants.defaults.hash).join('').split('#')
+        const fragment = self.location.hash.split(self.settings.hash).join('').split('#')
         if (fragment.length === 2) {
           let attempts = 0
           const search = setInterval(() => {

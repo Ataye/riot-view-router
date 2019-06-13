@@ -13,7 +13,7 @@ export const Constants = {
   options: {
     settings: {
       required: ['default'],
-      optional: ['debugging', 'fallback', 'href', 'fragments', 'marker', 'title']
+      optional: ['debugging', 'fallback', 'href', 'fragments', 'marker', 'title', 'hash']
     },
     states: {
       required: ['name', 'route', 'tag'],

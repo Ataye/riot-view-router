@@ -21,7 +21,7 @@ export class Logger {
    * @param {int} timestamp - timestamp for log.
    */
   _format(message, timestamp) {
-    return `[${new Date(timestamp).toString()}]: (riot-view-router) "${message}"`
+    return `%c[${new Date(timestamp).toLocaleTimeString()}]: (riot-view-router)%c "${message}"`
   }
 
   /**
@@ -40,7 +40,7 @@ export class Logger {
   log (message) {
     const timestamp = this.time
     if (this.$router.settings.debugging)
-      console.log(this._format(message, timestamp))
+      console.log(this._format(message, timestamp),'color: rgb(255, 105, 100);','color: inherit')
     this.logs.push({ type: 'general', message, timestamp })
   }
 
@@ -51,7 +51,7 @@ export class Logger {
   warn (message) {
     const timestamp = this.time
     if (this.$router.settings.debugging)
-      console.warn(this._format(message, timestamp))
+      console.warn(this._format(message, timestamp), 'color: rgb(255, 105, 100);','color: inherit')
     this.logs.push({ type: 'warning', message, timestamp })
   }
 

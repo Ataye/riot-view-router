@@ -3,6 +3,7 @@ import { Constants } from './constants'
 import { Logger } from './logger'
 import { Tools } from './tools'
 import { Utils } from './utils'
+import observable from 'riot-observable'
 
 export default class {
 
@@ -22,20 +23,21 @@ export default class {
     self.states = []
 
     self.$riot = instance
-    self.$riot.observable(self)
-    self.$riot.mixin({ router: self })
-    self.$riot.mixin({
-      route: function(route) {
+    observable(self)
+    self.$riot.install(function(component) {
+      component.router = self
+      component.route = function(route) {
         // # automagically encode url fragments
         route = route.map((fragment, index) => index ? encodeURI(`/${fragment}`) : fragment)
         // # safe guard for query strings
         if (route.slice(-1).indexOf('/?'))
           route[route.length - 1] = route[route.length - 1].replace('/?', '?')
         // # construct final url
-        return `/${self.constants.defaults.hash}/${route.join('')}`
+        return `/${self.settings.hash}/${route.join('')}`
+        //return `/${self.constants.defaults.hash}/${route.join('')}`
       }
-    })
 
+    })
     self.$logger = new Logger(self)
     self.$tools = new Tools(self)
     self.$utils = new Utils(self)
@@ -78,12 +80,13 @@ export default class {
     self.settings.debugging = self.settings.debugging || false
     self.settings.fragments = self.settings.fragments || true
     self.settings.marker = self.settings.marker || self.constants.defaults.marker
+    self.settings.hash = self.settings.hash || self.constants.defaults.hash
 
     if (self.settings.href)
       if (self.location.href.indexOf(self.settings.href) == -1)
         throw Error('Defined href not found within location context')
 
-    self.settings.href = self.settings.href || self.location.href.split(self.constants.defaults.hash)[0]
+    self.settings.href = self.settings.href || self.location.href.split(self.settings.hash)[0]
     if (!self.settings.href.endsWith('/'))
       self.settings.href = `${self.settings.href}/`
 
@@ -148,9 +151,9 @@ export default class {
         return reject()
       }
 
-      self.location = self.settings.href + self.constants.defaults.hash + route
+      self.location = self.settings.href + self.settings.hash + route
       var route_check = setInterval(() => {
-        if (self.location.hash == self.constants.defaults.hash + route) {
+        if (self.location.hash == self.settings.hash + route) {
           window.clearInterval(route_check)
           self.trigger('navigate', { route })
           if (!skipPush)
@@ -186,7 +189,7 @@ export default class {
       else
         var state = self.$utils.stateByName(name)
 
-      const location = self.location.hash.split(self.constants.defaults.hash)[1]
+      const location = self.location.hash.split(self.settings.hash)[1]
 
       if (location !== state.route.route) {
         if (!state.route.variables.length) {
@@ -244,7 +247,7 @@ export default class {
 
         self.running = true
 
-        if (self.location.hash.split(self.constants.defaults.hash).length !== 2) {
+        if (self.location.hash.split(self.settings.hash).length !== 2) {
           self.navigate(
             self.$utils.stateByName(
               self.settings.default
