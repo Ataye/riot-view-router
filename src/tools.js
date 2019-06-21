@@ -20,8 +20,7 @@ export class Tools {
 
     return new Promise((resolve) => {
       if (self.$state)
-        self.$riot.unmount(self.context.children[0].localName)
-        //self.context.children[0]._tag.unmount()
+        self.$riot.unmount(self.$state.tag)
 
       const node = document.createElement(state.tag)
       self.context.appendChild(node)
